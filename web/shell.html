@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hill Climb Racer</title>
+<meta name="description" content="Physics-driven 2D hill climbing game in C + raylib, with an AI rival, autopilot, ghosts and upgrades.">
+<style>
+  :root { --bg:#0b1030; --accent:#ffd23c; --text:#e8ecff; --muted:#9aa3d6; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; background:radial-gradient(ellipse at top,#26306e 0%,var(--bg) 60%); color:var(--text);
+              font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  body { display:flex; flex-direction:column; align-items:center; }
+  header { padding:14px 16px 8px; text-align:center; }
+  h1 { margin:0; font-size:clamp(22px,4vw,34px); letter-spacing:2px; color:var(--accent); text-shadow:0 3px 0 #8a5a00; }
+  header p { margin:4px 0 0; color:var(--muted); font-size:14px; }
+  #stage { position:relative; width:100%; display:flex; justify-content:center; }
+  #wrap { position:relative; width:1400px; height:800px; transform-origin:top left; flex:none;
+          border-radius:14px; overflow:hidden; box-shadow:0 18px 50px rgba(0,0,0,.55), 0 0 0 2px rgba(255,210,60,.35); background:#000; }
+  canvas.emscripten { width:1400px; height:800px; display:block; outline:none; }
+  #status { position:absolute; inset:0; display:flex; flex-direction:column; gap:14px; align-items:center; justify-content:center;
+            background:#0b1030; font-size:18px; }
+  #bar { width:min(60%,420px); height:10px; background:#2a3270; border-radius:6px; overflow:hidden; }
+  #fill { height:100%; width:0; background:linear-gradient(90deg,#4cd964,#ffd23c); transition:width .2s; }
+  footer { padding:10px 16px 16px; color:var(--muted); font-size:13px; text-align:center; }
+  kbd { background:#1c2457; border:1px solid #3a4590; border-bottom-width:3px; border-radius:5px; padding:1px 6px; color:var(--text); font-size:12px; }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <h1>HILL CLIMB RACER</h1>
+  <p>Race the AI rival, chase your ghost, upgrade your ride. Click the game to focus.</p>
+</header>
+<div id="stage"><div id="wrap">
+  <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+  <div id="status"><div id="msg">Loading engine...</div><div id="bar"><div id="fill"></div></div></div>
+</div></div>
+<footer>
+  <kbd>D</kbd>/<kbd>&rarr;</kbd> gas &nbsp; <kbd>A</kbd>/<kbd>&larr;</kbd> brake &nbsp; <kbd>Shift</kbd> nitro &nbsp;
+  <kbd>Tab</kbd> autopilot &nbsp; <kbd>H</kbd> hints &nbsp; <kbd>P</kbd> pause
+  &nbsp;&middot;&nbsp; Progress is saved in your browser
+  &nbsp;&middot;&nbsp; <a href="https://github.com/Edgar-50/HillClimbRacer">Source on GitHub</a>
+</footer>
+<script>
+  var canvas = document.getElementById('canvas');
+  var statusEl = document.getElementById('status'), msg = document.getElementById('msg'), fill = document.getElementById('fill');
+  ['keydown','keyup'].forEach(function(t){
+    window.addEventListener(t, function(e){
+      if(['Tab','Space','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].indexOf(e.code) >= 0) e.preventDefault();
+    }, {passive:false});
+  });
+  canvas.addEventListener('mousedown', function(){ canvas.focus(); });
+  /* the game renders at a fixed 1400x800; scale the frame to fit the window */
+  var stage = document.getElementById('stage'), wrap = document.getElementById('wrap');
+  function fit(){
+    var k = Math.min((window.innerWidth - 24) / 1400, (window.innerHeight - 140) / 800, 1.5);
+    k = Math.max(k, 0.3);
+    wrap.style.transform = 'scale(' + k + ')';
+    stage.style.height = (800 * k) + 'px';
+    wrap.style.marginRight = (1400 * k - 1400) + 'px';
+  }
+  window.addEventListener('resize', fit); fit();
+  var Module = {
+    canvas: canvas,
+    print: function(t){ console.log(t); },
+    printErr: function(t){ console.warn(t); },
+    setStatus: function(t){
+      if(!t){ statusEl.style.display='none'; canvas.focus(); return; }
+      var m = t.match(/\((\d+(\.\d+)?)\/(\d+)\)/);
+      if(m) fill.style.width = (100*m[1]/m[3]) + '%';
+      msg.textContent = t.replace(/\(.*\)/,'').trim() || 'Loading...';
+    },
+    totalDependencies: 0,
+    monitorRunDependencies: function(left){
+      this.totalDependencies = Math.max(this.totalDependencies, left);
+      Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : '');
+    }
+  };
+  window.onerror = function(){ msg.textContent = 'Something went wrong - try reloading the page.'; statusEl.style.display='flex'; };
+</script>
+{{{ SCRIPT }}}
+</body>
+</html>

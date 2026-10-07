@@ -2,7 +2,7 @@
 A full Hill Climb Racing clone built with raylib (C).
 
  Features
-- **5 unique stages**: Countryside, Desert, Arctic, Volcano, Moon
+- **6 stages**: Countryside, Desert, Arctic, Volcano, Moon (low gravity), Endless
 - **Fuel system** – throttle drains fuel; run out and you roll to a stop
 - **Distance tracker** with progress bar toward each stage's goal
 - **Coin collection** – bobbing gold coins scattered across terrain
@@ -48,7 +48,7 @@ gcc -Wall -O2 -std=c11 hill_climb_racer.c -o hill_climb_racer \
 
 Or use the included Makefile:
 ```bash
-make && ./hill_climb_racer
+make && ./hill_climb_racer   # see README.md for the v5.0 feature list
 ```
 
  Build (macOS)
@@ -71,7 +71,8 @@ gcc hill_climb_racer.c -o hill_climb_racer.exe ^
 | Stage | Terrain | Target |
 |-------|---------|--------|
 | 1 – Countryside | Gentle rolling hills | 300 m |
-| 2 – Desert      | Sandy dunes          | 400 m |
-| 3 – Arctic      | Icy slopes           | 500 m |
-| 4 – Volcano     | Extreme jagged rock  | 600 m |
-| 5 – Moon        | Low-gravity craters  | 700 m |
+| 2 – Desert      | Sandy dunes          | 500 m |
+| 3 – Arctic      | Icy slopes           | 650 m |
+| 4 – Volcano     | Extreme jagged rock  | 800 m |
+| 5 – Moon        | Low-gravity craters  | 1000 m |
+| 6 – Endless     | Ever-harder sunset hills | no limit |
